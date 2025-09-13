@@ -1,5 +1,4 @@
 from __future__ import annotations
-
 from typing import Any, Dict, Optional, Sequence, Tuple
 
 
@@ -31,11 +30,24 @@ class Module:
 
     def train(self) -> None:
         "Set the mode of this module and all descendent modules to `train`."
-        raise NotImplementedError("Need to include this file from past assignment.")
+
+        def rec(module: Module) -> None:
+            module.training = True
+            for child_module in module._modules.values():
+                rec(child_module)
+
+        rec(self)
 
     def eval(self) -> None:
         "Set the mode of this module and all descendent modules to `eval`."
-        raise NotImplementedError("Need to include this file from past assignment.")
+
+        # TODO: Implement for Task 0.4.
+        def rec(module: Module) -> None:
+            module.training = False
+            for child_module in module._modules.values():
+                rec(child_module)
+
+        rec(self)
 
     def named_parameters(self) -> Sequence[Tuple[str, Parameter]]:
         """
@@ -45,11 +57,31 @@ class Module:
         Returns:
             The name and `Parameter` of each ancestor parameter.
         """
-        raise NotImplementedError("Need to include this file from past assignment.")
+        # TODO: Implement for Task 0.4.
+        res_list: list[Tuple[str, Parameter]] = []
+
+        def rec(
+            module: Module, prefix: str, res_list: list[tuple[str, Parameter]]
+        ) -> None:
+            prefix = prefix + "." if len(prefix) > 0 else prefix
+            res_list += [(prefix + k, v) for k, v in module._parameters.items()]
+            for module_name, child_module in module._modules.items():
+                rec(child_module, prefix + module_name, res_list)
+
+        rec(self, "", res_list)
+        return res_list
 
     def parameters(self) -> Sequence[Parameter]:
         "Enumerate over all the parameters of this module and its descendents."
-        raise NotImplementedError("Need to include this file from past assignment.")
+        res_list: list[Parameter] = []
+
+        def rec(module: Module, res_list: list[Parameter]) -> None:
+            res_list += list(module._parameters.values())
+            for child_module in module._modules.values():
+                rec(child_module, res_list)
+
+        rec(self, res_list)
+        return res_list
 
     def add_parameter(self, k: str, v: Any) -> Parameter:
         """
