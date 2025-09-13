@@ -11,6 +11,7 @@ import numpy as np
 
 import minitorch
 
+
 from . import operators
 from .autodiff import Context
 from .tensor_ops import SimpleBackend, TensorBackend
@@ -118,9 +119,8 @@ class Sigmoid(Function):
     @staticmethod
     def backward(ctx: Context, grad_output: Tensor) -> Tensor:
         (t1_sigmoid,) = ctx.saved_values
-        assert isinstance(t1_sigmoid, Tensor)
         ones_tensor = tensor([1], backend=grad_output.backend)
-        return t1_sigmoid.f.mul_zip(
+        return t1_sigmoid.f.mul_zip(  # type: ignore
             grad_output,
             t1_sigmoid.f.mul_zip(
                 t1_sigmoid.f.add_zip(ones_tensor, t1_sigmoid.f.neg_map(t1_sigmoid)),
@@ -138,8 +138,7 @@ class ReLU(Function):
     @staticmethod
     def backward(ctx: Context, grad_output: Tensor) -> Tensor:
         (t1,) = ctx.saved_values
-        assert isinstance(t1, Tensor)
-        return t1.f.relu_back_zip(t1, grad_output)
+        return t1.f.relu_back_zip(t1, grad_output)  # type: ignore
 
 
 class Log(Function):
@@ -151,8 +150,7 @@ class Log(Function):
     @staticmethod
     def backward(ctx: Context, grad_output: Tensor) -> Tensor:
         (t1,) = ctx.saved_values
-        assert isinstance(t1, Tensor)
-        return t1.f.log_back_zip(t1, grad_output)
+        return t1.f.log_back_zip(t1, grad_output)  # type: ignore
 
 
 class Exp(Function):
@@ -165,8 +163,7 @@ class Exp(Function):
     @staticmethod
     def backward(ctx: Context, grad_output: Tensor) -> Tensor:
         (t1_exp,) = ctx.saved_values
-        assert isinstance(t1_exp, Tensor)
-        return t1_exp.f.mul_zip(grad_output, t1_exp)
+        return t1_exp.f.mul_zip(grad_output, t1_exp)  # type: ignore
 
 
 class Sum(Function):
