@@ -136,7 +136,7 @@ class Tensor:
 
     def _ensure_tensor(self, b: TensorLike) -> Tensor:
         "Turns a python number into a tensor with the same backend."
-        if isinstance(b, (int, float)):
+        if isinstance(b, (int, float, np.number)):
             c = Tensor.make([b], (1,), backend=self.backend)
         else:
             b._type_(self.backend)
@@ -204,7 +204,8 @@ class Tensor:
 
     def item(self) -> float:
         assert self.size == 1
-        return self[0]
+        x: float = self._tensor._storage[0]
+        return x
 
     def sum(self, dim: Optional[int] = None) -> Tensor:
         "Compute the sum over dimension `dim`"
